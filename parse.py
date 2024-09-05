@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 import json
@@ -30,7 +30,13 @@ def main() -> int:
     config_props = swagger["paths"][AMS_CONFIG_PATH]["get"]["responses"]["200"][
         "schema"
     ]["properties"]["metadata"]["properties"]["config"]["properties"]
+    for props in config_props.values():
+        if "description" in props:
+            props["description"] = props["description"].replace("\n", " ")
     node_props = swagger["definitions"]["NodePatch"]["properties"]
+    for props in node_props.values():
+        if "description" in props:
+            props["description"] = props["description"].replace("\n", " ")
     env = Environment(loader=FileSystemLoader("."))
     templ = env.get_template("template.md.j2")
     text = templ.render(configs=config_props, nodes=node_props)
